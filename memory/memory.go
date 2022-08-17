@@ -2,7 +2,6 @@ package memoryevents
 
 import (
 	"context"
-	"fmt"
 	"sync"
 
 	"github.com/gofrs/uuid"
@@ -29,7 +28,6 @@ func (m *memoryStore[Payload]) Publish(ctx context.Context, payload Payload) err
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	fmt.Printf("calling publish with %d callbacks\n", len(m.callbacks))
 	for _, c := range m.callbacks {
 		go c(payload)
 	}

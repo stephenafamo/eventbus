@@ -4,9 +4,6 @@ import (
 	"context"
 	"errors"
 	"sync"
-	// "github.com/go-redis/redis/v8"
-	// memorystore "github.com/stephenafamo/eventbus/store/memory"
-	// redisstore "github.com/stephenafamo/eventbus/store/redis"
 )
 
 var ErrDuplicateID = errors.New("Duplicate handler ID")
@@ -33,7 +30,9 @@ func NewEvent[Payload any](ctx context.Context, store Store[Payload]) (Event[Pay
 	}
 
 	// Will exit when the subscription channel closes
-	go store.Subscribe(ctx, e.subscribe)
+	if err := store.Subscribe(ctx, e.subscribe); err != nil {
+		return nil, err
+	}
 
 	return e, nil
 }
