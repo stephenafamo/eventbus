@@ -30,9 +30,9 @@ loginEvent, _ :=  redisevents.New[loginPayload](ctx, goRedisClient, "channelName
 ### 3. Register Handlers
 
 ```go
-func loginHandler1(loginPayload) {
+loginHandler1 := eventbus.NewHandler(func(payload LoginPayload, ctx context.Context) {
     // Handle login event
-}
+})
 
 // The ID is used if we want to UnregisterHandler the handler
 loginEvent.RegisterHandler("someID", loginHandler1)

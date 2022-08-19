@@ -80,3 +80,15 @@ func (e *event[Payload]) Publish(ctx context.Context, payload Payload) error {
 	defer e.mu.RUnlock()
 	return e.store.Publish(ctx, payload)
 }
+
+type handler[Payload any] struct {
+	handle func(Payload, context.Context)
+}
+
+func (h handler[Payload]) Handle(payload Payload, ctx context.Context) {
+	h.handle(payload, ctx)
+}
+
+func NewHandler[Payload any](fn func(Payload, context.Context)) handler[Payload] {
+	return handler[Payload]{handle: fn}
+}
