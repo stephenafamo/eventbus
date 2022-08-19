@@ -6,7 +6,7 @@ import (
 	"sync"
 )
 
-var ErrDuplicateID = errors.New("Duplicate handler ID")
+var ErrDuplicateID = errors.New("duplicate handler id")
 
 type Event[Payload any] interface {
 	RegisterHandler(id string, f EventHandler[Payload]) error
@@ -15,7 +15,7 @@ type Event[Payload any] interface {
 }
 
 type EventHandler[Payload any] interface {
-	Handle(payload Payload)
+	Handle(payload Payload, ctx context.Context)
 }
 
 type EventHandlerFunc[Payload any] func(payload Payload)
@@ -43,9 +43,9 @@ type event[Payload any] struct {
 	mu       sync.RWMutex
 }
 
-func (e *event[Payload]) subscribe(payload Payload) {
+func (e *event[Payload]) subscribe(payload Payload, ctx context.Context) {
 	for _, handler := range e.handlers {
-		go handler.Handle(payload)
+		go handler.Handle(payload, ctx)
 	}
 }
 

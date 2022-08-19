@@ -39,7 +39,7 @@ func (r *redisStore[Payload]) Publish(ctx context.Context, payload Payload) erro
 	return r.client.Publish(ctx, r.channel, buf.String()).Err()
 }
 
-func (r *redisStore[Payload]) Subscribe(ctx context.Context, f func(Payload)) error {
+func (r *redisStore[Payload]) Subscribe(ctx context.Context, f func(Payload, context.Context)) error {
 	sub := r.client.Subscribe(ctx, r.channel)
 
 	go func() {
@@ -52,7 +52,7 @@ func (r *redisStore[Payload]) Subscribe(ctx context.Context, f func(Payload)) er
 				if err != nil {
 					fmt.Printf("ERROR: %v", err)
 				}
-				f(payload)
+				f(payload, ctx)
 				log.Printf("sending to channel %#v", payload)
 			case <-ctx.Done():
 				// close and cleanup the channels

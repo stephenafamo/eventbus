@@ -10,7 +10,7 @@ import (
 
 func newStore[Payload any]() *memoryStore[Payload] {
 	return &memoryStore[Payload]{
-		callbacks: make(map[[16]byte]func(Payload)),
+		callbacks: make(map[[16]byte]func(Payload, context.Context)),
 	}
 }
 
@@ -21,7 +21,7 @@ func New[Payload any](ctx context.Context) (eventbus.Event[Payload], error) {
 
 type memoryStore[Payload any] struct {
 	mu        sync.RWMutex
-	callbacks map[[16]byte]func(Payload)
+	callbacks map[[16]byte]func(Payload, context.Context)
 }
 
 func (m *memoryStore[Payload]) Publish(ctx context.Context, payload Payload) error {
@@ -29,13 +29,13 @@ func (m *memoryStore[Payload]) Publish(ctx context.Context, payload Payload) err
 	defer m.mu.Unlock()
 
 	for _, c := range m.callbacks {
-		go c(payload)
+		go c(payload, ctx)
 	}
 
 	return nil
 }
 
-func (m *memoryStore[Payload]) Subscribe(ctx context.Context, f func(Payload)) error {
+func (m *memoryStore[Payload]) Subscribe(ctx context.Context, f func(Payload, context.Context)) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 

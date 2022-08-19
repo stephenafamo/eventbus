@@ -8,5 +8,5 @@ type Store[Payload any] interface {
 	Publish(ctx context.Context, payload Payload) error
 
 	// Free any resources when the context is done
-	Subscribe(ctx context.Context, f func(Payload)) error
+	Subscribe(ctx context.Context, f func(Payload, context.Context)) error
 }
