@@ -82,13 +82,13 @@ func (e *event[Payload]) Publish(ctx context.Context, payload Payload) error {
 }
 
 type handler[Payload any] struct {
-	handle func(Payload, context.Context)
+	handle func(Payload)
 }
 
-func (h handler[Payload]) Handle(payload Payload, ctx context.Context) {
-	h.handle(payload, ctx)
+func (h handler[Payload]) Handle(payload Payload) {
+	h.handle(payload)
 }
 
-func NewHandler[Payload any](fn func(Payload, context.Context)) handler[Payload] {
+func NewHandler[Payload any](fn func(Payload)) handler[Payload] {
 	return handler[Payload]{handle: fn}
 }
