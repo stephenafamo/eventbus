@@ -35,7 +35,7 @@ func loginHandler1(loginPayload) {
 }
 
 // The ID is used if we want to UnregisterHandler the handler
-loginEvent.RegisterHandler("someID", loginHandler1)
+loginEvent.RegisterHandler("someID", eventbus.HandlerFunc(loginHandler1))
 ```
 
 ### 4. Publish Events
