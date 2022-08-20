@@ -9,19 +9,9 @@ import (
 var ErrDuplicateID = errors.New("Duplicate handler ID")
 
 type Event[Payload any] interface {
-	RegisterHandler(id string, f EventHandler[Payload]) error
+	RegisterHandler(id string, f Handler[Payload]) error
 	UnregisterHandler(id string)
 	Publish(ctx context.Context, payload Payload) error
-}
-
-type EventHandler[Payload any] interface {
-	Handle(payload Payload)
-}
-
-type EventHandlerFunc[Payload any] func(payload Payload)
-
-func (e EventHandlerFunc[Payload]) Handle(payload Payload) {
-	e(payload)
 }
 
 func NewEvent[Payload any](ctx context.Context, store Store[Payload]) (Event[Payload], error) {
@@ -39,7 +29,7 @@ func NewEvent[Payload any](ctx context.Context, store Store[Payload]) (Event[Pay
 
 type event[Payload any] struct {
 	store    Store[Payload]
-	handlers map[string]EventHandler[Payload]
+	handlers map[string]Handler[Payload]
 	mu       sync.RWMutex
 }
 
@@ -50,12 +40,12 @@ func (e *event[Payload]) subscribe(payload Payload) {
 }
 
 // Register registers an event handler
-func (e *event[Payload]) RegisterHandler(id string, f EventHandler[Payload]) error {
+func (e *event[Payload]) RegisterHandler(id string, f Handler[Payload]) error {
 	e.mu.Lock()
 	defer e.mu.Unlock()
 
 	if e.handlers == nil {
-		e.handlers = map[string]EventHandler[Payload]{}
+		e.handlers = map[string]Handler[Payload]{}
 	}
 
 	if _, ok := e.handlers[id]; ok {
