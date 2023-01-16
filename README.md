@@ -2,7 +2,7 @@
 
 This is a package for peforming actions based on events. The flow is simple.
 
-### 1. Create the payload
+## 1. Create the payload
 
 ```go
 type LoginPayload struct {
@@ -11,7 +11,7 @@ type LoginPayload struct {
 }
 ```
 
-### 2. Create the event
+## 2. Create the event
 
 Using an in-memory implemnetation
 
@@ -27,7 +27,7 @@ import redisevents "github.com/stephenafamo/eventbus/redis"
 loginEvent, _ :=  redisevents.New[loginPayload](ctx, goRedisClient, "channelName")
 ```
 
-### 3. Register Handlers
+## 3. Register Handlers
 
 ```go
 func loginHandler1(loginPayload) {
@@ -35,10 +35,10 @@ func loginHandler1(loginPayload) {
 }
 
 // The ID is used if we want to UnregisterHandler the handler
-loginEvent.RegisterHandler("someID", eventbus.HandlerFunc(loginHandler1))
+loginEvent.RegisterHandler("someID", eventbus.HandlerFunc[loginPayload](loginHandler1))
 ```
 
-### 4. Publish Events
+## 4. Publish Events
 
 ```go
 loginEvent.Publish(ctx, LoginPayload{
